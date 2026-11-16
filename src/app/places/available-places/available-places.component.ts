@@ -26,6 +26,6 @@ export class AvailablePlacesComponent implements OnInit{
 
     this.destroyRef.onDestroy(() => {
       subs.unsubscribe();
-    })
+    });
   }
 }
