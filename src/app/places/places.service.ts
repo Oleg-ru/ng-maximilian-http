@@ -37,7 +37,7 @@ export class PlacesService {
           placeId: place.id
       })
           .pipe(
-              catchError(error => {
+              catchError(() => {
                   this.userPlaces.set(prevPlaces);
                   return throwError(() => new Error('Failed to store selected place'))
               })
