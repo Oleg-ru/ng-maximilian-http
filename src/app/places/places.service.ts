@@ -1,7 +1,7 @@
 import {inject, Injectable, signal} from '@angular/core';
 
 import { Place } from './place.model';
-import {catchError, map, throwError} from "rxjs";
+import {catchError, map, tap, throwError} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 
 @Injectable({
@@ -21,6 +21,9 @@ export class PlacesService {
 
   loadUserPlaces() {
       return this.fetchPlaces('/user-places', 'Ops.. Error in get your favorite places. Please try again later.')
+          .pipe(tap({
+              next: (userPlaces) => this.userPlaces.set(userPlaces),
+          }))
   }
 
   addPlaceToUserPlaces(place: Place) {
