@@ -27,11 +27,21 @@ export class PlacesService {
   }
 
   addPlaceToUserPlaces(place: Place) {
-      this.userPlaces.update(prevPlaces => [...prevPlaces, place]);
+      const prevPlaces = this.userPlaces();
+
+      if (!prevPlaces.some((placeItem) => placeItem.id === place.id)) {
+          this.userPlaces.set([...prevPlaces, place]);
+      }
 
       return this.httpClient.put(`${this.BASE_URL}/user-places`, {
           placeId: place.id
       })
+          .pipe(
+              catchError(error => {
+                  this.userPlaces.set(prevPlaces);
+                  return throwError(() => new Error('Failed to store selected place'))
+              })
+          )
   }
 
   removeUserPlace(place: Place) {}
