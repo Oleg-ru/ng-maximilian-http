@@ -2,7 +2,6 @@ import {Component, DestroyRef, inject, OnInit, signal} from '@angular/core';
 
 import {PlacesContainerComponent} from '../places-container/places-container.component';
 import {PlacesComponent} from '../places.component';
-import {Place} from "../place.model";
 import {PlacesService} from "../places.service";
 
 @Component({

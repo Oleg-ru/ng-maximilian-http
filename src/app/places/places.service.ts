@@ -27,6 +27,8 @@ export class PlacesService {
   }
 
   addPlaceToUserPlaces(place: Place) {
+      this.userPlaces.update(prevPlaces => [...prevPlaces, place]);
+
       return this.httpClient.put(`${this.BASE_URL}/user-places`, {
           placeId: place.id
       })
