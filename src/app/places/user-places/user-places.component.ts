@@ -1,50 +1,42 @@
 import {Component, DestroyRef, inject, OnInit, signal} from '@angular/core';
 
-import { PlacesContainerComponent } from '../places-container/places-container.component';
-import { PlacesComponent } from '../places.component';
+import {PlacesContainerComponent} from '../places-container/places-container.component';
+import {PlacesComponent} from '../places.component';
 import {Place} from "../place.model";
-import {HttpClient} from "@angular/common/http";
-import {catchError, map, throwError} from "rxjs";
+import {PlacesService} from "../places.service";
 
 @Component({
-  selector: 'app-user-places',
-  standalone: true,
-  templateUrl: './user-places.component.html',
-  styleUrl: './user-places.component.css',
-  imports: [PlacesContainerComponent, PlacesComponent],
+    selector: 'app-user-places',
+    standalone: true,
+    templateUrl: './user-places.component.html',
+    styleUrl: './user-places.component.css',
+    imports: [PlacesContainerComponent, PlacesComponent],
 })
-export class UserPlacesComponent implements OnInit{
-  places = signal<Place[] | undefined>(undefined);
-  isFetching = signal(false);
-  error = signal('');
+export class UserPlacesComponent implements OnInit {
+    places = signal<Place[] | undefined>(undefined);
+    isFetching = signal(false);
+    error = signal('');
 
-  private httpClient = inject(HttpClient);
-  private destroyRef = inject(DestroyRef)
+    private placesService = inject(PlacesService);
+    private destroyRef = inject(DestroyRef)
 
-  ngOnInit() {
-    this.isFetching.set(true);
-    const subs = this.httpClient.get<{ places: Place[] }>('http://localhost:3000/user-places')
-        .pipe(
-            map(response => response.places),
-            catchError((error) => {
-              console.log(error);
-              return  throwError(() => new Error('Ops.. Error in get your favorite places. Please try again later.'))
-            })
-        )
-        .subscribe({
-          next: (places) => {
-            this.places.set(places)
-          },
-          error: (error: Error) => {
-            this.error.set(error.message);
-          },
-          complete: () => {
-            this.isFetching.set(false);
-          }
+    ngOnInit() {
+        this.isFetching.set(true);
+        const subs = this.placesService.loadUserPlaces()
+            .subscribe({
+                next: (places) => {
+                    this.places.set(places)
+                },
+                error: (error: Error) => {
+                    this.error.set(error.message);
+                },
+                complete: () => {
+                    this.isFetching.set(false);
+                }
+            });
+
+        this.destroyRef.onDestroy(() => {
+            subs.unsubscribe();
         });
-
-    this.destroyRef.onDestroy(() => {
-      subs.unsubscribe();
-    });
-  }
+    }
 }
