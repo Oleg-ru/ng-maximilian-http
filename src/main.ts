@@ -5,12 +5,13 @@ import {HttpHandlerFn, HttpRequest, provideHttpClient, withInterceptors} from "@
 
 function loggingInterceptor(request: HttpRequest<unknown>, next: HttpHandlerFn) {
 
-    const req = request.clone({
-        headers: request.headers.set('X-DEBUG', 'Test header :-)')
-    })
+    // const req = request.clone({
+    //     headers: request.headers.set('X-DEBUG', 'Test header :-)')
+    // })
     console.log('[Outgoing Request]');
     console.log(request);
-    return next(req);
+    // return next(req);
+    return next(request);
 }
 
 bootstrapApplication(AppComponent, {
