@@ -48,6 +48,20 @@ export class PlacesService {
     }
 
     removeUserPlace(place: Place) {
+        const prevPlaces = this.userPlaces();
+
+        if (prevPlaces.some((placeItem) => placeItem.id === place.id)) {
+            this.userPlaces.set(prevPlaces.filter(p => p.id !== place.id));
+        }
+
+        return this.httpClient.delete(`${this.BASE_URL}/user-places/${place.id}`)
+            .pipe(
+                catchError(() => {
+                    this.userPlaces.set(prevPlaces);
+                    this.errorService.showError('Failed delete favorite place!!!');
+                    return throwError(() => new Error('Failed delete favorite place'))
+                })
+            )
     }
 
     private fetchPlaces(url: string, errorMessage: string) {
